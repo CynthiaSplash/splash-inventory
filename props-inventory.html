@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Splash Production Prop Inventory</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1F3864;
+    --navy-mid: #2E74B5;
+    --navy-light: #D6E4F0;
+    --navy-pale: #EBF3FB;
+    --gold: #C9A84C;
+    --gold-light: #FFF8E7;
+    --surface: #F7F8FA;
+    --white: #FFFFFF;
+    --border: rgba(31,56,100,0.12);
+    --border-strong: rgba(31,56,100,0.25);
+    --text: #1a2540;
+    --text-muted: #5a6a85;
+    --text-faint: #8fa0b8;
+    --good: #2D7D46;
+    --good-bg: #EAF5EE;
+    --fair: #B45309;
+    --fair-bg: #FFF7ED;
+    --poor: #B91C1C;
+    --poor-bg: #FEF2F2;
+    --shelf-wood: #8B6914;
+    --shelf-bg: #F5EDD6;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --shadow: 0 2px 12px rgba(31,56,100,0.08);
+    --shadow-card: 0 4px 24px rgba(31,56,100,0.12);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: var(--navy);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  }
+  .header-brand { display: flex; align-items: center; gap: 12px; }
+  .header-logo {
+    width: 36px; height: 36px; background: var(--gold);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 15px; color: var(--navy); letter-spacing: -0.5px;
+  }
+  .header-title { color: #fff; font-weight: 500; font-size: 15px; }
+  .header-title span { color: var(--gold); }
+  .header-actions { display: flex; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: 1.5px solid transparent; cursor: pointer; transition: all 0.15s; font-family: inherit;
+  }
+  .btn-outline { background: transparent; border-color: rgba(255,255,255,0.3); color: #fff; }
+  .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+  .btn-gold { background: var(--gold); border-color: var(--gold); color: var(--navy); font-weight: 600; }
+  .btn-gold:hover { background: #b8952f; }
+  .btn-navy { background: var(--navy); border-color: var(--navy-mid); color: #fff; }
+  .btn-navy:hover { background: #162a52; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn svg { width: 15px; height: 15px; }
+
+  /* ─── Layout ─── */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── Stats Bar ─── */
+  .stats-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+  }
+  .stats-inner { max-width: 1280px; margin: 0 auto; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; }
+  .stat-value { font-size: 22px; font-weight: 600; color: var(--navy); font-family: 'DM Mono', monospace; }
+  .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-divider { width: 1px; height: 40px; background: var(--border); }
+
+  /* ─── Toolbar ─── */
+  .toolbar {
+    max-width: 1280px; margin: 1.5rem auto 0; padding: 0 2rem;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 360px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-faint); width: 16px; height: 16px; }
+  .search-wrap input {
+    width: 100%; padding: 8px 12px 8px 34px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 13px; font-family: inherit; background: var(--white);
+    color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--navy-mid); }
+  select {
+    padding: 8px 28px 8px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: inherit; background: var(--white); color: var(--text);
+    appearance: none; outline: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a6a85' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 8px center;
+    transition: border-color 0.15s;
+  }
+  select:focus { border-color: var(--navy-mid); }
+  .view-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .view-btn { padding: 7px 11px; background: var(--white); border: none; cursor: pointer; color: var(--text-muted); transition: all 0.15s; }
+  .view-btn.active { background: var(--navy); color: #fff; }
+  .view-btn svg { width: 16px; height: 16px; display: block; }
+
+  /* ─── Main Content ─── */
+  .main { max-width: 1280px; margin: 1.5rem auto 3rem; padding: 0 2rem; }
+
+  /* ─── Shelf View ─── */
+  .shelf-view { display: none; }
+  .shelf-view.active { display: block; }
+  .shelf-container {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+  }
+  .shelf-unit {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow);
+  }
+  .shelf-header {
+    background: var(--navy); padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .shelf-header h2 { color: #fff; font-size: 14px; font-weight: 500; }
+  .shelf-badge {
+    background: rgba(255,255,255,0.15); color: #fff;
+    font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500;
+  }
+  .shelf-body { padding: 1rem; }
+  .shelf-level {
+    margin-bottom: 1rem; border: 1.5px dashed var(--border);
+    border-radius: var(--radius); padding: 10px; position: relative;
+    background: var(--shelf-bg);
+    min-height: 120px;
+  }
+  .shelf-level:last-child { margin-bottom: 0; }
+  .shelf-level-label {
+    font-size: 10px; font-weight: 600; color: var(--shelf-wood);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .shelf-level-label::after { content: ''; flex: 1; height: 1px; background: rgba(139,105,20,0.2); }
+  .shelf-bar {
+    height: 6px; background: var(--shelf-wood); border-radius: 3px;
+    margin-bottom: 8px; opacity: 0.4;
+  }
+  .shelf-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .shelf-chip {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 8px; cursor: pointer;
+    transition: all 0.15s; font-size: 12px; color: var(--text);
+    max-width: 160px;
+  }
+  .shelf-chip:hover { border-color: var(--navy-mid); background: var(--navy-pale); box-shadow: 0 2px 8px rgba(31,56,100,0.1); }
+  .shelf-chip-img {
+    width: 28px; height: 28px; border-radius: 4px; object-fit: cover;
+    background: var(--navy-pale); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    overflow: hidden;
+  }
+  .shelf-chip-img img { width: 100%; height: 100%; object-fit: cover; }
+  .shelf-chip-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .shelf-chip-qty { font-size: 10px; color: var(--text-faint); background: var(--surface); padding: 1px 5px; border-radius: 4px; flex-shrink: 0; }
+  .shelf-empty { font-size: 12px; color: var(--text-faint); font-style: italic; padding: 8px; }
+  .drop-zone { border: 2px dashed var(--navy-mid) !important; background: var(--navy-pale) !important; }
+
+  /* ─── Grid View ─── */
+  .grid-view { display: none; }
+  .grid-view.active { display: block; }
+  .category-section { margin-bottom: 2.5rem; }
+  .category-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;
+    padding-bottom: 10px; border-bottom: 2px solid var(--border);
+  }
+  .category-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .category-header h2 { font-size: 15px; font-weight: 600; color: var(--navy); }
+  .category-count { font-size: 12px; color: var(--text-muted); background: var(--navy-pale); padding: 2px 10px; border-radius: 20px; }
+  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+
+  /* ─── Prop Card ─── */
+  .prop-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--border); overflow: hidden;
+    cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);
+  }
+  .prop-card:hover { box-shadow: var(--shadow-card); border-color: var(--navy-mid); transform: translateY(-2px); }
+  .prop-card-image {
+    width: 100%; height: 140px; background: var(--navy-pale);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .prop-card-image img { width: 100%; height: 100%; object-fit: cover; }
+  .prop-card-image .img-placeholder { font-size: 36px; opacity: 0.4; }
+  .prop-card-image .upload-hover {
+    position: absolute; inset: 0; background: rgba(31,56,100,0.6);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; gap: 4px; opacity: 0; transition: opacity 0.2s;
+  }
+  .prop-card-image .upload-hover svg { width: 22px; height: 22px; }
+  .prop-card:hover .upload-hover { opacity: 1; }
+  .prop-card-body { padding: 12px 14px; }
+  .prop-card-name { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 4px; line-height: 1.4; }
+  .prop-card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .prop-card-location { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+  .prop-card-location svg { width: 12px; height: 12px; }
+  .condition-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .cond-good { background: var(--good-bg); color: var(--good); }
+  .cond-fair { background: var(--fair-bg); color: var(--fair); }
+  .cond-poor { background: var(--poor-bg); color: var(--poor); }
+  .cond-new { background: #EFF6FF; color: #1D4ED8; }
+  .prop-card-qty { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .hidden-card { display: none !important; }
+
+  /* ─── Table View ─── */
+  .table-view { display: none; }
+  .table-view.active { display: block; }
+  .table-wrap { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: var(--navy); color: #fff; font-weight: 500; font-size: 12px;
+    padding: 12px 14px; text-align: left; letter-spacing: 0.03em; white-space: nowrap;
+  }
+  thead th:first-child { border-radius: 0; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--navy-pale); }
+  tbody td { padding: 10px 14px; color: var(--text); vertical-align: middle; }
+  .td-img { width: 40px; }
+  .td-thumb {
+    width: 36px; height: 36px; border-radius: 6px; background: var(--navy-pale);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; cursor: pointer;
+  }
+  .td-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .td-name { font-weight: 500; color: var(--navy); max-width: 220px; }
+  .td-loc { font-size: 12px; color: var(--text-muted); }
+
+  /* ─── Modal ─── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,20,50,0.5);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 1rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 620px;
+    max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+    transform: translateY(12px); transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header {
+    background: var(--navy); padding: 18px 22px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0;
+  }
+  .modal-header h3 { color: #fff; font-size: 15px; font-weight: 500; flex: 1; padding-right: 12px; }
+  .modal-close { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+  .modal-close svg { width: 16px; height: 16px; }
+  .modal-body { padding: 22px; }
+  .modal-image-zone {
+    width: 100%; height: 200px; border: 2px dashed var(--border);
+    border-radius: var(--radius); background: var(--navy-pale);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; margin-bottom: 20px;
+  }
+  .modal-image-zone:hover { border-color: var(--navy-mid); background: var(--navy-light); }
+  .modal-image-zone.has-image { border-style: solid; border-color: var(--border); }
+  .modal-image-zone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px); }
+  .modal-image-zone .img-label { font-size: 13px; color: var(--text-muted); position: relative; z-index: 1; }
+  .modal-image-zone .img-icon { color: var(--navy-mid); position: relative; z-index: 1; }
+  .modal-image-zone .img-icon svg { width: 28px; height: 28px; }
+  .modal-image-zone .img-overlay {
+    position: absolute; inset: 0; background: rgba(31,56,100,0.55);
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px;
+    color: #fff; font-size: 12px; opacity: 0; transition: opacity 0.2s; border-radius: calc(var(--radius) - 2px);
+  }
+  .modal-image-zone:hover .img-overlay { opacity: 1; }
+  .modal-image-zone .img-overlay svg { width: 22px; height: 22px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: inherit; color: var(--text); background: var(--white); outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--navy-mid); }
+  .form-group textarea { resize: vertical; min-height: 70px; }
+  .location-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 5px; }
+  .loc-btn {
+    padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px;
+    background: var(--white); cursor: pointer; font-size: 12px; font-family: inherit;
+    color: var(--text-muted); text-align: center; transition: all 0.15s; font-weight: 500;
+  }
+  .loc-btn:hover { border-color: var(--navy-mid); color: var(--navy); }
+  .loc-btn.selected { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+  .file-input-hidden { display: none; }
+
+  /* ─── Add Prop Button ─── */
+  .add-card {
+    background: var(--navy-pale); border-radius: var(--radius-lg);
+    border: 2px dashed var(--border); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+    transition: all 0.15s; min-height: 220px; color: var(--text-muted);
+  }
+  .add-card:hover { border-color: var(--navy-mid); color: var(--navy); background: var(--navy-light); }
+  .add-card svg { width: 28px; height: 28px; }
+  .add-card span { font-size: 13px; font-weight: 500; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 900px) {
+    .shelf-container { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .location-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .header { padding: 0 1rem; }
+    .stats-bar, .toolbar, .main { padding-left: 1rem; padding-right: 1rem; }
+    .stats-divider { display: none; }
+  }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--navy); color: #fff; padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; z-index: 300; transition: transform 0.25s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">SP</div>
+    <span class="header-title">Splash Production <span>· Prop Inventory</span></span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="exportCSV()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <button class="btn btn-outline" title="Clear all saved data and reset to defaults" onclick="if(confirm('Reset all data and images to defaults? This cannot be undone.')){localStorage.clear();location.reload();}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      Reset
+    </button>
+    <button class="btn btn-outline" onclick="openCatModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Categories
+    </button>
+    <button class="btn btn-gold" onclick="openAddModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Prop
+    </button>
+  </div>
+</header>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><span class="stat-value" id="stat-total">64</span><span class="stat-label">Total Items</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><span class="stat-value" id="stat-categories">4</span><span class="stat-label">Categories</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><span class="stat-value" id="stat-shelf1">—</span><span class="stat-label">Shelf 1 Items</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><span class="stat-value" id="stat-shelf2">—</span><span class="stat-label">Shelf 2 Items</span></div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search props…" oninput="filterProps()">
+  </div>
+  <select id="catFilter" onchange="filterProps()">
+    <option value="">All Categories</option>
+  </select>
+  <select id="condFilter" onchange="filterProps()">
+    <option value="">All Conditions</option>
+    <option value="New">New</option>
+    <option value="Good">Good</option>
+    <option value="Fair">Fair</option>
+    <option value="Poor">Poor</option>
+  </select>
+  <select id="shelfFilter" onchange="filterProps()">
+    <option value="">All Locations</option>
+    <option value="Shelf 1">Shelf 1</option>
+    <option value="Shelf 2">Shelf 2</option>
+    <option value="Unassigned">Unassigned</option>
+  </select>
+  <div style="flex:1"></div>
+  <div class="view-toggle">
+    <button class="view-btn" id="vbtn-shelf" onclick="setView('shelf')" title="Shelf view">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="4" rx="1"/><rect x="2" y="10" width="20" height="4" rx="1"/><rect x="2" y="17" width="20" height="4" rx="1"/></svg>
+    </button>
+    <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grid view">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </button>
+    <button class="view-btn" id="vbtn-table" onclick="setView('table')" title="Table view">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Shelf View -->
+  <div class="shelf-view" id="view-shelf">
+    <div class="shelf-container">
+      <div class="shelf-unit">
+        <div class="shelf-header">
+          <h2>Shelf 1 — Left Unit</h2>
+          <span class="shelf-badge" id="shelf1-count">0 items</span>
+        </div>
+        <div class="shelf-body" id="shelf1-body">
+          <div class="shelf-level" id="s1-top" ondragover="event.preventDefault();this.classList.add('drop-zone')" ondragleave="this.classList.remove('drop-zone')" ondrop="dropToShelf(event,'Shelf 1 – Top')">
+            <div class="shelf-level-label">Top shelf</div>
+            <div class="shelf-bar"></div>
+            <div class="shelf-items" id="s1-top-items"></div>
+          </div>
+          <div class="shelf-level" id="s1-mid" ondragover="event.preventDefault();this.classList.add('drop-zone')" ondragleave="this.classList.remove('drop-zone')" ondrop="dropToShelf(event,'Shelf 1 – Middle')">
+            <div class="shelf-level-label">Middle shelf</div>
+            <div class="shelf-bar"></div>
+            <div class="shelf-items" id="s1-mid-items"></div>
+          </div>
+          <div class="shelf-level" id="s1-bot" ondragover="event.preventDefault();this.classList.add('drop-zone')" ondragleave="this.classList.remove('drop-zone')" ondrop="dropToShelf(event,'Shelf 1 – Bottom')">
+            <div class="shelf-level-label">Bottom shelf</div>
+            <div class="shelf-bar"></div>
+            <div class="shelf-items" id="s1-bot-items"></div>
+          </div>
+        </div>
+      </div>
+      <div class="shelf-unit">
+        <div class="shelf-header">
+          <h2>Shelf 2 — Right Unit</h2>
+          <span class="shelf-badge" id="shelf2-count">0 items</span>
+        </div>
+        <div class="shelf-body" id="shelf2-body">
+          <div class="shelf-level" id="s2-top" ondragover="event.preventDefault();this.classList.add('drop-zone')" ondragleave="this.classList.remove('drop-zone')" ondrop="dropToShelf(event,'Shelf 2 – Top')">
+            <div class="shelf-level-label">Top shelf</div>
+            <div class="shelf-bar"></div>
+            <div class="shelf-items" id="s2-top-items"></div>
+          </div>
+          <div class="shelf-level" id="s2-mid" ondragover="event.preventDefault();this.classList.add('drop-zone')" ondragleave="this.classList.remove('drop-zone')" ondrop="dropToShelf(event,'Shelf 2 – Middle')">
+            <div class="shelf-level-label">Middle shelf</div>
+            <div class="shelf-bar"></div>
+            <div class="shelf-items" id="s2-mid-items"></div>
+          </div>
+          <div class="shelf-level" id="s2-bot" ondragover="event.preventDefault();this.classList.add('drop-zone')" ondragleave="this.classList.remove('drop-zone')" ondrop="dropToShelf(event,'Shelf 2 – Bottom')">
+            <div class="shelf-level-label">Bottom shelf</div>
+            <div class="shelf-bar"></div>
+            <div class="shelf-items" id="s2-bot-items"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid View -->
+  <div class="grid-view active" id="view-grid"></div>
+
+  <!-- Table View -->
+  <div class="table-view" id="view-table">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="td-img"></th>
+            <th>Item Description</th>
+            <th>Category</th>
+            <th>Qty</th>
+            <th>Condition</th>
+            <th>Location</th>
+            <th>Custodian</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="propModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add New Prop</h3>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="file" accept="image/*" class="file-input-hidden" id="modalFileInput" onchange="handleModalImageUpload(event)">
+      <div class="modal-image-zone" id="modalImageZone" onclick="document.getElementById('modalFileInput').click()">
+        <div class="img-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <span class="img-label">Click to upload prop photo</span>
+        <div class="img-overlay">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Change photo
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Item Description</label>
+          <input type="text" id="f-name" placeholder="e.g. Collapsible Backdrop Stand">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="f-cat"></select>
+        </div>
+        <div class="form-group">
+          <label>Sub-type</label>
+          <input type="text" id="f-subtype" placeholder="e.g. Backdrop Stand">
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="f-qty" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label>Unit</label>
+          <input type="text" id="f-unit" placeholder="pcs / sets / rolls">
+        </div>
+        <div class="form-group">
+          <label>Condition</label>
+          <select id="f-cond">
+            <option>New</option>
+            <option selected>Good</option>
+            <option>Fair</option>
+            <option>Poor</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Custodian / Assigned To</label>
+          <input type="text" id="f-custodian" placeholder="e.g. Production Team">
+        </div>
+        <div class="form-group full">
+          <label>Shelf Location</label>
+          <div class="location-grid">
+            <button class="loc-btn" data-loc="Shelf 1 – Top" onclick="selectLoc(this)">Shelf 1 – Top</button>
+            <button class="loc-btn" data-loc="Shelf 1 – Middle" onclick="selectLoc(this)">Shelf 1 – Mid</button>
+            <button class="loc-btn" data-loc="Shelf 1 – Bottom" onclick="selectLoc(this)">Shelf 1 – Bot</button>
+            <button class="loc-btn" data-loc="Shelf 2 – Top" onclick="selectLoc(this)">Shelf 2 – Top</button>
+            <button class="loc-btn" data-loc="Shelf 2 – Middle" onclick="selectLoc(this)">Shelf 2 – Mid</button>
+            <button class="loc-btn" data-loc="Shelf 2 – Bottom" onclick="selectLoc(this)">Shelf 2 – Bot</button>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Remarks</label>
+          <textarea id="f-remarks" placeholder="Any notes, sizes, serial numbers…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-navy" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveProp()">Save Prop</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category Management Modal -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>Manage Categories</h3>
+      <button class="modal-close" onclick="closeCatModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px"></div>
+      <div style="border-top:1px solid var(--border);padding-top:16px">
+        <p style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Add New Category</p>
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center">
+          <input type="text" id="new-cat-name" placeholder="Category name" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--navy-mid)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')addCategory()">
+          <div style="position:relative">
+            <input type="color" id="new-cat-color" value="#2E74B5" style="width:42px;height:38px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;padding:3px;background:var(--white)" title="Pick colour">
+          </div>
+          <input type="text" id="new-cat-emoji" placeholder="Emoji" maxlength="2" style="width:52px;padding:9px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;text-align:center;font-family:inherit;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--navy-mid)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:6px">Pick a colour and an emoji to represent the category</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-navy" onclick="closeCatModal()">Done</button>
+      <button class="btn btn-gold" onclick="addCategory()">Add Category</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let CATS = [
+  { name: 'Furniture & Backdrop', color: '#1F3864', emoji: '🪑' },
+  { name: 'Costumes & Wearables', color: '#2E74B5', emoji: '👔' },
+  { name: 'Tech & AV',            color: '#1F6B75', emoji: '📷' },
+  { name: 'Stationery & Office',  color: '#4B3068', emoji: '📋' },
+];
+
+const SHELF_MAP = {
+  'Shelf 1 – Top':    's1-top-items',
+  'Shelf 1 – Middle': 's1-mid-items',
+  'Shelf 1 – Bottom': 's1-bot-items',
+  'Shelf 2 – Top':    's2-top-items',
+  'Shelf 2 – Middle': 's2-mid-items',
+  'Shelf 2 – Bottom': 's2-bot-items',
+};
+
+let props = [
+  {id:1,name:'Collapsible Backdrop Stand (L)',cat:'Furniture & Backdrop',sub:'Backdrop Stand',qty:2,unit:'pcs',cond:'Good',loc:'Shelf 1 – Top',value:380,custodian:'Production Team',remarks:'',image:null},
+  {id:2,name:'Seamless Paper Backdrop – White',cat:'Furniture & Backdrop',sub:'Backdrop',qty:3,unit:'rolls',cond:'Good',loc:'Shelf 1 – Top',value:90,custodian:'Production Team',remarks:'9ft wide',image:null},
+  {id:3,name:'Seamless Paper Backdrop – Navy',cat:'Furniture & Backdrop',sub:'Backdrop',qty:2,unit:'rolls',cond:'Good',loc:'Shelf 1 – Middle',value:90,custodian:'Production Team',remarks:'9ft wide',image:null},
+  {id:4,name:'Collapsible Fabric Backdrop (Branded)',cat:'Furniture & Backdrop',sub:'Backdrop',qty:1,unit:'pcs',cond:'Good',loc:'Shelf 1 – Middle',value:450,custodian:'Marketing Team',remarks:'Custom print',image:null},
+  {id:5,name:'Director Chair – Black',cat:'Furniture & Backdrop',sub:'Furniture',qty:4,unit:'pcs',cond:'Good',loc:'Shelf 1 – Bottom',value:120,custodian:'Production Team',remarks:'',image:null},
+  {id:6,name:'Folding Table – 6ft',cat:'Furniture & Backdrop',sub:'Furniture',qty:3,unit:'pcs',cond:'Good',loc:'Shelf 1 – Bottom',value:95,custodian:'Admin',remarks:'',image:null},
+  {id:7,name:'Tall Bar Stool – White',cat:'Furniture & Backdrop',sub:'Furniture',qty:2,unit:'pcs',cond:'Good',loc:'Shelf 2 – Top',value:140,custodian:'Production Team',remarks:'',image:null},
+  {id:8,name:'V-Flat Foam Board – White/Black',cat:'Furniture & Backdrop',sub:'Backdrop Accessory',qty:4,unit:'pcs',cond:'Good',loc:'Shelf 2 – Top',value:45,custodian:'Production Team',remarks:'Bounce boards',image:null},
+  {id:9,name:'Artificial Plant – Large',cat:'Furniture & Backdrop',sub:'Decor',qty:2,unit:'pcs',cond:'Good',loc:'Shelf 2 – Middle',value:85,custodian:'Admin',remarks:'Fiddle Leaf',image:null},
+  {id:10,name:'Picture Frame Set',cat:'Furniture & Backdrop',sub:'Decor',qty:1,unit:'set',cond:'Good',loc:'Shelf 2 – Middle',value:60,custodian:'Production Team',remarks:'Set of 8',image:null},
+  {id:11,name:'Flag Stand – Adjustable',cat:'Furniture & Backdrop',sub:'Backdrop Accessory',qty:3,unit:'pcs',cond:'Good',loc:'Shelf 2 – Bottom',value:55,custodian:'Production Team',remarks:'For SG & agency flags',image:null},
+  {id:12,name:'Business Formal Suit – Men (Navy)',cat:'Costumes & Wearables',sub:'Costume',qty:3,unit:'sets',cond:'Good',loc:'Shelf 1 – Top',value:380,custodian:'Wardrobe Manager',remarks:'Sizes: S, M, L',image:null},
+  {id:13,name:'Business Blazer – Women (Black)',cat:'Costumes & Wearables',sub:'Costume',qty:4,unit:'pcs',cond:'Good',loc:'Shelf 1 – Middle',value:220,custodian:'Wardrobe Manager',remarks:'Sizes: XS–L',image:null},
+  {id:14,name:'Agency Polo Shirt (Branded)',cat:'Costumes & Wearables',sub:'Uniform',qty:20,unit:'pcs',cond:'Good',loc:'Shelf 1 – Middle',value:45,custodian:'Admin',remarks:'Various sizes',image:null},
+  {id:15,name:'High-Visibility Safety Vest',cat:'Costumes & Wearables',sub:'Uniform',qty:10,unit:'pcs',cond:'Good',loc:'Shelf 1 – Bottom',value:18,custodian:'Admin',remarks:'Field production shoots',image:null},
+  {id:16,name:'Hard Hat – White',cat:'Costumes & Wearables',sub:'Safety Prop',qty:5,unit:'pcs',cond:'Good',loc:'Shelf 1 – Bottom',value:25,custodian:'Admin',remarks:'Site-visit themed',image:null},
+  {id:17,name:'Formal Tie Set – Assorted',cat:'Costumes & Wearables',sub:'Accessory',qty:1,unit:'set',cond:'Good',loc:'Shelf 2 – Top',value:80,custodian:'Wardrobe Manager',remarks:'Set of 10',image:null},
+  {id:18,name:'Lanyard & ID Holder Set',cat:'Costumes & Wearables',sub:'Accessory',qty:30,unit:'pcs',cond:'Good',loc:'Shelf 2 – Middle',value:8,custodian:'Admin',remarks:'Prop use only',image:null},
+  {id:19,name:'Branded Face Mask',cat:'Costumes & Wearables',sub:'Accessory',qty:50,unit:'pcs',cond:'New',loc:'Shelf 2 – Middle',value:3,custodian:'Admin',remarks:'',image:null},
+  {id:20,name:'Briefcase Prop – Leather Look',cat:'Costumes & Wearables',sub:'Accessory',qty:2,unit:'pcs',cond:'Good',loc:'Shelf 2 – Bottom',value:130,custodian:'Wardrobe Manager',remarks:'',image:null},
+  {id:21,name:'DSLR Camera – Sony A7 III',cat:'Tech & AV',sub:'Camera',qty:1,unit:'unit',cond:'Good',loc:'Shelf 1 – Top',value:3200,custodian:'Lead Photographer',remarks:'S/N: A7III-20230510',image:null},
+  {id:22,name:'Camera Lens – 24-70mm f/2.8',cat:'Tech & AV',sub:'Camera Lens',qty:1,unit:'unit',cond:'Good',loc:'Shelf 1 – Top',value:1800,custodian:'Lead Photographer',remarks:'',image:null},
+  {id:23,name:'Camera Lens – 85mm f/1.8',cat:'Tech & AV',sub:'Camera Lens',qty:1,unit:'unit',cond:'Good',loc:'Shelf 1 – Middle',value:650,custodian:'Lead Photographer',remarks:'Portrait lens',image:null},
+  {id:24,name:'Mirrorless Camera – Sony ZV-E10',cat:'Tech & AV',sub:'Camera',qty:1,unit:'unit',cond:'Good',loc:'Shelf 1 – Middle',value:950,custodian:'Video Team',remarks:'B-Roll camera',image:null},
+  {id:25,name:'LED Studio Light – 150W',cat:'Tech & AV',sub:'Lighting',qty:4,unit:'units',cond:'Good',loc:'Shelf 1 – Bottom',value:380,custodian:'Production Team',remarks:'Bi-colour',image:null},
+  {id:26,name:'Softbox Kit 90x90cm',cat:'Tech & AV',sub:'Lighting',qty:2,unit:'sets',cond:'Good',loc:'Shelf 1 – Bottom',value:120,custodian:'Production Team',remarks:'',image:null},
+  {id:27,name:'Circular Ring Light – 18"',cat:'Tech & AV',sub:'Lighting',qty:2,unit:'units',cond:'Good',loc:'Shelf 2 – Top',value:220,custodian:'Production Team',remarks:'With phone mount',image:null},
+  {id:28,name:'Lavalier Microphone Set',cat:'Tech & AV',sub:'Audio',qty:3,unit:'sets',cond:'Good',loc:'Shelf 2 – Top',value:280,custodian:'Video Team',remarks:'Wireless UHF',image:null},
+  {id:29,name:'Shotgun Microphone – Rode NTG4',cat:'Tech & AV',sub:'Audio',qty:1,unit:'unit',cond:'Good',loc:'Shelf 2 – Middle',value:450,custodian:'Video Team',remarks:'',image:null},
+  {id:30,name:'Teleprompter – iPad Compatible',cat:'Tech & AV',sub:'AV',qty:1,unit:'unit',cond:'Good',loc:'Shelf 2 – Middle',value:320,custodian:'Production Team',remarks:'',image:null},
+  {id:31,name:'Drone – DJI Mini 3 Pro',cat:'Tech & AV',sub:'Camera',qty:1,unit:'unit',cond:'Good',loc:'Shelf 2 – Bottom',value:1200,custodian:'Video Team',remarks:'Incl. 2 batteries',image:null},
+  {id:32,name:'Green Screen – Collapsible 5x7ft',cat:'Tech & AV',sub:'Backdrop',qty:1,unit:'unit',cond:'Good',loc:'Shelf 2 – Bottom',value:180,custodian:'Production Team',remarks:'Chromakey',image:null},
+  {id:33,name:'Agency Mock-Up Letterhead (A4)',cat:'Stationery & Office',sub:'Branded Print',qty:200,unit:'sheets',cond:'Good',loc:'Shelf 1 – Top',value:0.20,custodian:'Admin',remarks:'Prop use only',image:null},
+  {id:34,name:'Branded Folder – Agency Logo',cat:'Stationery & Office',sub:'Branded Print',qty:30,unit:'pcs',cond:'Good',loc:'Shelf 1 – Top',value:4,custodian:'Admin',remarks:'',image:null},
+  {id:35,name:'Clipboard – Black Hard Cover',cat:'Stationery & Office',sub:'Office Prop',qty:8,unit:'pcs',cond:'Good',loc:'Shelf 1 – Middle',value:12,custodian:'Admin',remarks:'',image:null},
+  {id:36,name:'Whiteboard – A1 Portable',cat:'Stationery & Office',sub:'Office Prop',qty:2,unit:'pcs',cond:'Good',loc:'Shelf 1 – Middle',value:120,custodian:'Production Team',remarks:'With easel stand',image:null},
+  {id:37,name:'Branded USB Drive – 16GB',cat:'Stationery & Office',sub:'Tech Prop',qty:15,unit:'pcs',cond:'Good',loc:'Shelf 2 – Top',value:18,custodian:'Admin',remarks:'Agency logo print',image:null},
+  {id:38,name:'Mock Agency Award / Plaque',cat:'Stationery & Office',sub:'Display Prop',qty:2,unit:'pcs',cond:'Good',loc:'Shelf 2 – Middle',value:95,custodian:'Production Team',remarks:'Acrylic, decorative',image:null},
+  {id:39,name:'Desk Organiser Set',cat:'Stationery & Office',sub:'Office Prop',qty:4,unit:'sets',cond:'Good',loc:'Shelf 2 – Middle',value:30,custodian:'Admin',remarks:'',image:null},
+  {id:40,name:'Bookshelf Books (Neutral Cover)',cat:'Stationery & Office',sub:'Decor Prop',qty:30,unit:'pcs',cond:'Good',loc:'Shelf 2 – Bottom',value:5,custodian:'Production Team',remarks:'Background dressing',image:null},
+];
+let nextId = 41;
+let editingId = null;
+let currentLoc = '';
+let modalImageData = null;
+let currentView = 'grid';
+let draggingId = null;
+
+function getCatColor(cat) {
+  const c = CATS.find(x => x.name === cat);
+  return c ? c.color : '#888';
+}
+function getCatEmoji(cat) {
+  const c = CATS.find(x => x.name === cat);
+  return c ? c.emoji : '📦';
+}
+function condClass(c) {
+  return {New:'cond-new',Good:'cond-good',Fair:'cond-fair',Poor:'cond-poor'}[c] || 'cond-good';
+}
+
+function imgEl(p, size=36) {
+  if (p.image) {
+    return `<div style="width:${size}px;height:${size}px;border-radius:6px;overflow:hidden;flex-shrink:0"><img src="${p.image}" style="width:100%;height:100%;object-fit:cover"></div>`;
+  }
+  return `<div style="width:${size}px;height:${size}px;border-radius:6px;background:var(--navy-pale);display:flex;align-items:center;justify-content:center;font-size:${size*0.5}px;flex-shrink:0">${getCatEmoji(p.cat)}</div>`;
+}
+
+// ── Render Grid View ──
+function renderGrid() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cf = document.getElementById('catFilter').value;
+  const cdf = document.getElementById('condFilter').value;
+  const sf = document.getElementById('shelfFilter').value;
+
+  const el = document.getElementById('view-grid');
+  el.innerHTML = '';
+
+  CATS.forEach(cat => {
+    const items = props.filter(p => {
+      if (p.cat !== cat.name) return false;
+      if (q && !p.name.toLowerCase().includes(q) && !p.sub.toLowerCase().includes(q)) return false;
+      if (cf && p.cat !== cf) return false;
+      if (cdf && p.cond !== cdf) return false;
+      if (sf) {
+        if (sf === 'Unassigned' && p.loc) return false;
+        if (sf === 'Shelf 1' && !p.loc.startsWith('Shelf 1')) return false;
+        if (sf === 'Shelf 2' && !p.loc.startsWith('Shelf 2')) return false;
+      }
+      return true;
+    });
+    if (cf && cat.name !== cf) return;
+
+    const sec = document.createElement('div');
+    sec.className = 'category-section';
+    sec.innerHTML = `<div class="category-header"><div class="category-dot" style="background:${cat.color}"></div><h2>${cat.name}</h2><span class="category-count">${items.length} items</span></div>`;
+    const grid = document.createElement('div');
+    grid.className = 'prop-grid';
+
+    items.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'prop-card';
+      card.draggable = true;
+      card.dataset.id = p.id;
+      card.ondragstart = () => { draggingId = p.id; };
+      card.innerHTML = `
+        <div class="prop-card-image">
+          ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="img-placeholder">${getCatEmoji(p.cat)}</div>`}
+          <div class="upload-hover">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload photo
+          </div>
+        </div>
+        <div class="prop-card-body">
+          <div class="prop-card-name">${p.name}</div>
+          <div class="prop-card-qty">${p.qty} ${p.unit}</div>
+          <div class="prop-card-meta">
+            <div class="prop-card-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${p.loc || 'Unassigned'}
+            </div>
+            <span class="condition-badge ${condClass(p.cond)}">${p.cond}</span>
+          </div>
+        </div>`;
+      card.querySelector('.prop-card-image').onclick = (e) => {
+        e.stopPropagation();
+        openImageUpload(p.id);
+      };
+      card.onclick = () => openEditModal(p.id);
+      grid.appendChild(card);
+    });
+
+    // Add button
+    const addCard = document.createElement('div');
+    addCard.className = 'add-card';
+    addCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add to ${cat.name}</span>`;
+    addCard.onclick = () => openAddModal(cat.name);
+    grid.appendChild(addCard);
+
+    sec.appendChild(grid);
+    el.appendChild(sec);
+  });
+}
+
+// ── Render Table View ──
+function renderTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cf = document.getElementById('catFilter').value;
+  const cdf = document.getElementById('condFilter').value;
+  const sf = document.getElementById('shelfFilter').value;
+
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  const filtered = props.filter(p => {
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    if (cf && p.cat !== cf) return false;
+    if (cdf && p.cond !== cdf) return false;
+    if (sf) {
+      if (sf === 'Unassigned' && p.loc) return false;
+      if (sf === 'Shelf 1' && !p.loc.startsWith('Shelf 1')) return false;
+      if (sf === 'Shelf 2' && !p.loc.startsWith('Shelf 2')) return false;
+    }
+    return true;
+  });
+  filtered.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-img"><div class="td-thumb" onclick="openImageUpload(${p.id})">${p.image ? `<img src="${p.image}">` : getCatEmoji(p.cat)}</div></td>
+      <td><div class="td-name">${p.name}</div><div style="font-size:11px;color:var(--text-faint)">${p.sub}</div></td>
+      <td><span style="font-size:12px;padding:3px 8px;border-radius:4px;background:var(--navy-pale);color:var(--navy);font-weight:500">${p.cat}</span></td>
+      <td>${p.qty} ${p.unit}</td>
+      <td><span class="condition-badge ${condClass(p.cond)}">${p.cond}</span></td>
+      <td class="td-loc">${p.loc || '—'}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${p.custodian}</td>`;
+    tr.style.cursor = 'pointer';
+    tr.ondblclick = () => openEditModal(p.id);
+    body.appendChild(tr);
+  });
+}
+
+// ── Render Shelf View ──
+function renderShelf() {
+  Object.values(SHELF_MAP).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '';
+  });
+
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  props.filter(p => !q || p.name.toLowerCase().includes(q)).forEach(p => {
+    const containerId = SHELF_MAP[p.loc];
+    if (!containerId) return;
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const chip = document.createElement('div');
+    chip.className = 'shelf-chip';
+    chip.draggable = true;
+    chip.dataset.id = p.id;
+    chip.ondragstart = (e) => { draggingId = p.id; e.stopPropagation(); };
+    chip.innerHTML = `
+      <div class="shelf-chip-img">${p.image ? `<img src="${p.image}" alt="">` : getCatEmoji(p.cat)}</div>
+      <span class="shelf-chip-name">${p.name}</span>
+      <span class="shelf-chip-qty">×${p.qty}</span>`;
+    chip.onclick = () => openEditModal(p.id);
+    el.appendChild(chip);
+  });
+
+  // Update counts
+  const s1 = props.filter(p => p.loc && p.loc.startsWith('Shelf 1')).length;
+  const s2 = props.filter(p => p.loc && p.loc.startsWith('Shelf 2')).length;
+  document.getElementById('shelf1-count').textContent = s1 + ' items';
+  document.getElementById('shelf2-count').textContent = s2 + ' items';
+  document.getElementById('stat-shelf1').textContent = s1;
+  document.getElementById('stat-shelf2').textContent = s2;
+}
+
+function dropToShelf(e, loc) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drop-zone');
+  if (draggingId === null) return;
+  const p = props.find(x => x.id == draggingId);
+  if (p) { p.loc = loc; renderAll(); showToast(`Moved to ${loc}`); }
+  draggingId = null;
+}
+
+// ── Stats ──
+function updateStats() {
+  document.getElementById('stat-total').textContent = props.length;
+  renderShelf();
+}
+
+function renderAll() {
+  refreshCatDropdowns();
+  renderGrid();
+  renderTable();
+  renderShelf();
+  updateStats();
+}
+
+// ── View Toggle ──
+function setView(v) {
+  currentView = v;
+  ['shelf','grid','table'].forEach(n => {
+    document.getElementById('view-'+n).classList.toggle('active', n===v);
+    document.getElementById('vbtn-'+n).classList.toggle('active', n===v);
+  });
+}
+
+// ── Filters ──
+function filterProps() { renderAll(); }
+
+// ── Image Upload (inline) ──
+function openImageUpload(id) {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const p = props.find(x => x.id === id);
+      if (p) { p.image = ev.target.result; renderAll(); showToast('Photo updated'); }
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+// ── Modal ──
+function openAddModal(cat) {
+  editingId = null;
+  modalImageData = null;
+  document.getElementById('modalTitle').textContent = 'Add New Prop';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-cat').value = cat || 'Furniture & Backdrop';
+  document.getElementById('f-subtype').value = '';
+  document.getElementById('f-qty').value = 1;
+  document.getElementById('f-unit').value = 'pcs';
+  document.getElementById('f-cond').value = 'Good';
+  document.getElementById('f-custodian').value = '';
+  document.getElementById('f-remarks').value = '';
+  currentLoc = '';
+  document.querySelectorAll('.loc-btn').forEach(b => b.classList.remove('selected'));
+  const zone = document.getElementById('modalImageZone');
+  zone.classList.remove('has-image');
+  zone.querySelectorAll('img').forEach(i => i.remove());
+  zone.querySelector('.img-icon').style.display = '';
+  zone.querySelector('.img-label').style.display = '';
+  document.getElementById('propModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const p = props.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  modalImageData = p.image || null;
+  document.getElementById('modalTitle').textContent = 'Edit Prop';
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-cat').value = p.cat;
+  document.getElementById('f-subtype').value = p.sub;
+  document.getElementById('f-qty').value = p.qty;
+  document.getElementById('f-unit').value = p.unit;
+  document.getElementById('f-cond').value = p.cond;
+  document.getElementById('f-custodian').value = p.custodian;
+  document.getElementById('f-remarks').value = p.remarks;
+  currentLoc = p.loc;
+  document.querySelectorAll('.loc-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.loc === p.loc);
+  });
+  const zone = document.getElementById('modalImageZone');
+  if (p.image) {
+    zone.classList.add('has-image');
+    zone.querySelectorAll('img.modal-prev').forEach(i => i.remove());
+    const img = document.createElement('img');
+    img.className = 'modal-prev';
+    img.src = p.image;
+    zone.prepend(img);
+    zone.querySelector('.img-icon').style.display = 'none';
+    zone.querySelector('.img-label').style.display = 'none';
+  } else {
+    zone.classList.remove('has-image');
+    zone.querySelectorAll('img.modal-prev').forEach(i => i.remove());
+    zone.querySelector('.img-icon').style.display = '';
+    zone.querySelector('.img-label').style.display = '';
+  }
+  document.getElementById('propModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('propModal').classList.remove('open');
+}
+
+function selectLoc(btn) {
+  document.querySelectorAll('.loc-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentLoc = btn.dataset.loc;
+}
+
+function handleModalImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    modalImageData = ev.target.result;
+    const zone = document.getElementById('modalImageZone');
+    zone.classList.add('has-image');
+    zone.querySelectorAll('img.modal-prev').forEach(i => i.remove());
+    const img = document.createElement('img');
+    img.className = 'modal-prev';
+    img.src = modalImageData;
+    zone.prepend(img);
+    zone.querySelector('.img-icon').style.display = 'none';
+    zone.querySelector('.img-label').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveProp() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { document.getElementById('f-name').focus(); return; }
+  const data = {
+    name, cat: document.getElementById('f-cat').value,
+    sub: document.getElementById('f-subtype').value,
+    qty: parseInt(document.getElementById('f-qty').value) || 1,
+    unit: document.getElementById('f-unit').value || 'pcs',
+    cond: document.getElementById('f-cond').value,
+    loc: currentLoc,
+    custodian: document.getElementById('f-custodian').value,
+    remarks: document.getElementById('f-remarks').value,
+    image: modalImageData,
+  };
+  if (editingId) {
+    const idx = props.findIndex(x => x.id === editingId);
+    if (idx > -1) props[idx] = { ...props[idx], ...data };
+    showToast('Prop updated');
+  } else {
+    props.push({ id: nextId++, ...data });
+    showToast('Prop added');
+  }
+  closeModal();
+  renderAll();
+}
+
+// ── Category Management ──
+function refreshCatDropdowns() {
+  const filter = document.getElementById('catFilter');
+  const modal = document.getElementById('f-cat');
+  const prev = filter.value;
+  filter.innerHTML = '<option value="">All Categories</option>';
+  modal.innerHTML = '';
+  CATS.forEach(c => {
+    filter.innerHTML += `<option value="${c.name}">${c.emoji} ${c.name}</option>`;
+    modal.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+  });
+  filter.value = prev;
+}
+
+function openCatModal() {
+  renderCatList();
+  document.getElementById('catModal').classList.add('open');
+}
+function closeCatModal() {
+  document.getElementById('catModal').classList.remove('open');
+}
+
+function renderCatList() {
+  const list = document.getElementById('cat-list');
+  if (!CATS.length) { list.innerHTML = '<p style="font-size:13px;color:var(--text-faint);font-style:italic">No categories yet.</p>'; return; }
+  list.innerHTML = CATS.map((c, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
+      <div style="width:14px;height:14px;border-radius:50%;background:${c.color};flex-shrink:0"></div>
+      <span style="font-size:18px;line-height:1">${c.emoji}</span>
+      <span style="font-size:13px;font-weight:500;flex:1;color:var(--text)">${c.name}</span>
+      <span style="font-size:11px;color:var(--text-faint)">${props.filter(p=>p.cat===c.name).length} items</span>
+      <button onclick="deleteCategory(${i})" style="background:none;border:none;cursor:pointer;color:var(--text-faint);padding:2px 4px;border-radius:4px;display:flex;align-items:center" title="Delete category" onmouseover="this.style.color='var(--poor)'" onmouseout="this.style.color='var(--text-faint)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+function addCategory() {
+  const nameEl = document.getElementById('new-cat-name');
+  const name = nameEl.value.trim();
+  if (!name) { nameEl.focus(); return; }
+  if (CATS.find(c => c.name.toLowerCase() === name.toLowerCase())) { showToast('Category already exists'); return; }
+  const color = document.getElementById('new-cat-color').value;
+  const emoji = document.getElementById('new-cat-emoji').value.trim() || '📦';
+  CATS.push({ name, color, emoji });
+  nameEl.value = '';
+  document.getElementById('new-cat-emoji').value = '';
+  refreshCatDropdowns();
+  renderCatList();
+  renderAll();
+  showToast(`Category "${name}" added`);
+}
+
+function deleteCategory(idx) {
+  const cat = CATS[idx];
+  const count = props.filter(p => p.cat === cat.name).length;
+  if (count > 0) { showToast(`Cannot delete — ${count} prop(s) use this category`); return; }
+  CATS.splice(idx, 1);
+  refreshCatDropdowns();
+  renderCatList();
+  renderAll();
+  showToast(`Category deleted`);
+}
+
+// ── Export ──
+function exportCSV() {
+  const headers = ['ID','Name','Category','Sub-type','Qty','Unit','Condition','Location','Custodian','Remarks'];
+  const rows = props.map(p => [p.id,p.name,p.cat,p.sub,p.qty,p.unit,p.cond,p.loc,p.custodian,p.remarks].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'props-inventory.csv';
+  a.click();
+  showToast('CSV exported');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Close modal on backdrop click
+document.getElementById('propModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('catModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCatModal();
+});
+
+// ── localStorage persistence ──────────────────────────────────────────────
+const STORAGE_KEY_PROPS = 'splash_props';
+const STORAGE_KEY_CATS  = 'splash_cats';
+const STORAGE_KEY_NEXTID = 'splash_nextid';
+
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY_PROPS,  JSON.stringify(props));
+    localStorage.setItem(STORAGE_KEY_CATS,   JSON.stringify(CATS));
+    localStorage.setItem(STORAGE_KEY_NEXTID, String(nextId));
+  } catch(e) {
+    // localStorage full (images are large base64 strings) – warn user
+    showToast('⚠️ Storage full — some images may not be saved. Try removing unused photos.');
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const storedProps  = localStorage.getItem(STORAGE_KEY_PROPS);
+    const storedCats   = localStorage.getItem(STORAGE_KEY_CATS);
+    const storedNextId = localStorage.getItem(STORAGE_KEY_NEXTID);
+    if (storedProps)  { props  = JSON.parse(storedProps);  }
+    if (storedCats)   { CATS   = JSON.parse(storedCats);   }
+    if (storedNextId) { nextId = parseInt(storedNextId);    }
+  } catch(e) { /* ignore parse errors, use defaults */ }
+}
+
+// ── Patch save calls ──────────────────────────────────────────────────────
+// Wrap renderAll to always persist after any change
+const _renderAll = renderAll;
+renderAll = function() { _renderAll(); saveToStorage(); };
+
+// Patch inline image upload to also save
+const _openImageUpload = openImageUpload;
+openImageUpload = function(id) {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const p = props.find(x => x.id === id);
+      if (p) { p.image = ev.target.result; renderAll(); showToast('Photo saved ✓'); }
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+};
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+loadFromStorage();
+renderAll();
+</script>
+</body>
+</html>
